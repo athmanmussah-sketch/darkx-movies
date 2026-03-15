@@ -2,7 +2,7 @@
 """
 DarkX Movies Downloader for Termux
 Developer: DarkX Dev (255775710774)
-Version: 1.0.0
+Version: 1.0.0 (aria2 connections reduced to 4 for stability)
 """
 
 import os
@@ -282,11 +282,12 @@ def download_media(url, quality, format_choice, subtitles=False, subtitle_lang='
     
     # Use aria2 for faster downloads if enabled and available
     if config.get('use_aria2', False) and shutil.which('aria2c'):
+        MAX_CONNECTIONS = 4  # Safe number for Termux
         command.extend([
             '--downloader', 'aria2c',
-            '--downloader-args', 'aria2c:"-x 16 -k 1M"'
+            f'--downloader-args', f'aria2c:-x {MAX_CONNECTIONS} -k 1M'
         ])
-        print_colored("[i] Fast download enabled (aria2 with 16 connections)", 'green')
+        print_colored(f"[i] Fast download enabled (aria2 with {MAX_CONNECTIONS} connections)", 'green')
     
     # Add format
     if format_choice == 'mp3':
